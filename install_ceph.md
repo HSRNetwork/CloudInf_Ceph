@@ -74,3 +74,39 @@ ssh bob@node1 sudo ceph health
 ssh bob@node1 sudo ceph -s
 ssh bob@node1 sudo ceph osd tree
 ```
+
+## Create Ceph filesystem
+In order use the Ceph FS (FUSE) you need to create a pool and a filesystem. Mount the fs to test the setup.
+
+### Configuration on the Ceph cluster
+```bash
+ceph osd pool create cephfs_data 128
+ceph osd pool create cephfs_metadata 128
+ceph fs new mydata cephfs_metadata cephfs_data
+ceph-authtool -C /etc/ceph/ceph.keyring
+ceph-authtool -C /etc/ceph/ceph.keyring -n client.bob --cap osd 'allow rwx' --cap mon 'allow rwx' --gen-key
+ceph auth add client.bob -i /etc/ceph/ceph.keyring
+chmod 644 /etc/ceph/ceph.keyring
+```
+See http://docs.ceph.com/docs/master/rados/operations/user-management/ for more informations.
+
+The `pg_nume` value `128` is based on http://docs.ceph.com/docs/master/rados/operations/placement-groups/.
+Show pools and filesystem:
+```bash
+user@node1:$ ceph fs ls
+name: mydata, metdata pool: cephfs_metadata, data pools: [cephfs_data ]
+user@node1:$ ceph mds stat
+e5: 1/1/1 up {0=node1=up:active}
+```
+See http://docs.ceph.com/docs/master/cephfs/createfs/ for more informations.
+### Ceph mount
+```bash
+apt-get install ceph-fuse
+mkdir /root/mydata
+mkdir /etc/ceph
+# Change to the to your public monitor node IP
+scp bob@159.89.12.54:/etc/ceph/ceph.conf /etc/ceph/ceph.conf
+scp bob@159.89.12.54:/etc/ceph/ceph.keyring /etc/ceph/ceph.keyring
+ceph-fuse -m 159.89.12.54:6789 /root/mydata
+```
+See http://docs.ceph.com/docs/master/cephfs/fuse/ for more informations.
