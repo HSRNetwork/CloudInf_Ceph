@@ -42,7 +42,7 @@ done
 ```
 
 ## Set up Ceph
-This setup is based on http://docs.ceph.com/docs/master/start/quick-ceph-deploy/#starting-over.
+This setup is based on http://docs.ceph.com/docs/master/start/quick-ceph-deploy.
 
 ### Ceph-Deploy
 The following commands must be applied on the Ceph deploy node:
@@ -68,6 +68,8 @@ ceph-deploy --username bob mon create-initial
 ceph-deploy --username bob admin node1 node2 node3
 # Ensure to chose the right disk and it's currently unmounted!
 ceph-deploy --username bob osd create node1:sda node2:sda node3:sda
+ceph-deploy --username bob mds create node1
+ceph-deploy --username bob rgw create node1
 ssh bob@node1 sudo ceph health
 ssh bob@node1 sudo ceph -s
 ssh bob@node1 sudo ceph osd tree
