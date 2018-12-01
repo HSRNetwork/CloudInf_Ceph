@@ -10,9 +10,9 @@
 # docctl
 SSH_KEY=`doctl compute ssh-key list --format FingerPrint --no-header`
 # Droplet
-OS_IMAGE="ubuntu-16-04-x64"
+OS_IMAGE="ubuntu-18-04-x64"
 REGION="fra1"
-DROPLET_SIZE="512mb"
+DROPLET_SIZE="1gb"
 VOLUME_SIZE="10gb"
 # Ceph
 DEPLOY_NODE="ceph-deploy"
