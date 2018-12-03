@@ -1,6 +1,8 @@
 # How to set up a minimal Ceph cluster
 The following steps are needed in order to set up a ceph cluster build on top of 3 nodes. Please take care of the comments and change the configuration based on your own setup.
 
+**Note:** For simplicity of this lab use the user `root` to run all commands listed below!
+
 ## Prerequisites
 These prerequisites are based on http://docs.ceph.com/docs/master/start/quick-start-preflight/#debian-ubuntu.
 
