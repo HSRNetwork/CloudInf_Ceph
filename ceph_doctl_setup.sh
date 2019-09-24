@@ -1,7 +1,7 @@
 #!/bin/bash
 ############################################################
 # Before using this script, complete the following steps:
-#   - Install doctl (see https://www.digitalocean.com/community/tutorials/how-to-use-doctl-the-official-digitalocean-command-line-client)
+#   - Install doctl (see https://github.com/digitalocean/doctl/blob/master/README.md)
 #   - Add SSH key to your digitalocean account
 #   - Generate API token and set up doctl by using "doctl auth init"
 ############################################################
@@ -10,7 +10,7 @@
 # docctl
 SSH_KEY=`doctl compute ssh-key list --format FingerPrint --no-header`
 # Droplet
-OS_IMAGE="ubuntu-18-04-x64"
+OS_IMAGE="ubuntu-19-04-x64"
 REGION="fra1"
 DROPLET_SIZE="1gb"
 VOLUME_SIZE="10gb"
