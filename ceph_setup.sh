@@ -39,7 +39,7 @@ if [[ $rc -eq 0 ]] ; then
 else
     echo "Timeout."
 fi
-# Check minion reachability
+# Check node reachability
 for j in "${nodes[@]}"
 do
   ((count = 10))
@@ -64,13 +64,9 @@ read -p "Passwort for User bob: " varbobpw
 for z in "${minion_ips[@]}"
 do
   banner "Node - $z"
-	ssh root@$z apt update
-  ssh root@$z apt install ntp openssh-server python -y
-  ssh root@$z useradd -d /home/bob -m bob
-  ssh root@$z echo "bob:$varbobpw" | chpasswd
+	ssh root@$z apt update && apt install ntp openssh-server python -y && useradd -d /home/bob -m bob && echo "bob:$varbobpw" | chpasswd
   ssh root@$z echo "bob ALL = (root) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/bob
-  ssh root@$z chmod 0440 /etc/sudoers.d/bob
-  ssh root@$z sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config
+  ssh root@$z chmod 0440 /etc/sudoers.d/bob && sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config
   ssh root@$z service ssh restart
   # TODO: cat EOF hosts file
 done
