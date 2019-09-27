@@ -9,6 +9,7 @@ These prerequisites are based on http://docs.ceph.com/docs/master/start/quick-st
 ### Ceph-Nodes
 The following commands must be applied on each Ceph node:
 ```bash
+apt update
 apt install ntp openssh-server python -y
 useradd -d /home/bob -m bob
 # Change the password!
@@ -59,7 +60,7 @@ EOF
 mkdir /root/ceph
 cd /root/ceph
 ceph-deploy --username bob new node1
-# Change the mon_host private IP to the public one
+# Change the mon_host private IP to the public one (public ip from node 1)
 sed -i 's/mon_host = .*/mon_host = 165.227.133.37/g' ceph.conf
 # Change IP ranges to your IP ranges
 cat <<EOF >> ceph.conf
@@ -71,9 +72,9 @@ ceph-deploy --username bob mon create-initial
 ceph-deploy --username bob admin node1 node2 node3
 ceph-deploy --username bob mgr create node1
 # Ensure to chose the right disk and it's currently unmounted!
-ceph-deploy --username bob osd create --data /dev/sda node1
-ceph-deploy --username bob osd create --data /dev/sda node2
-ceph-deploy --username bob osd create --data /dev/sda node3
+ceph-deploy --username bob osd create --data /dev/disk/by-id/scsi-0DO_Volume_node1-vol01 node1
+ceph-deploy --username bob osd create --data /dev/disk/by-id/scsi-0DO_Volume_node2-vol01 node2
+ceph-deploy --username bob osd create --data /dev/disk/by-id/scsi-0DO_Volume_node3-vol01 node3
 ceph-deploy --username bob mds create node1
 # Note: rgw = RADOS Gateway ~= S3 object store hosted on ceph
 ceph-deploy --username bob rgw create node1
@@ -83,7 +84,7 @@ ssh bob@node1 sudo ceph osd tree
 ```
 
 ## Testing the Object Store (RADOS)
-Create service user login in order to access the S3 API. On node1:
+Create service user login in order to access the S3 API. **On node1**:
 ```bash
 radosgw-admin user create --uid="svc_user_01" --display-name="Service User 01"
 # Important: Note down the generated key array. E.g.:
@@ -104,9 +105,9 @@ On the ceph-deploy node:
 ```bash
 # On ceph-deploy node:
 apt-get install s3cmd -y
-# Change the access_key and secret_key to your own values:
-API_ACCESS_KEY=M0...
-API_SECRET_KEY=c7...
+# Change the access_key and secret_key to your own values (take the public ip address from node 1):
+API_ACCESS_KEY=PN...
+API_SECRET_KEY=1c...
 s3cmd --access_key=$API_ACCESS_KEY --secret_key=$API_SECRET_KEY --host=165.227.133.37:7480 --no-check-certificate --no-ssl mb s3://cloudinf_bucket
 echo "CloudInf Testing File" > testing_file.txt
 s3cmd --access_key=$API_ACCESS_KEY --secret_key=$API_SECRET_KEY --host=165.227.133.37:7480 --no-check-certificate --no-ssl put testing_file.txt s3://cloudinf_bucket/
@@ -178,6 +179,7 @@ MDS version: ceph version 13.2.2 (02899bfda814146b021136e9d8e80eba494e1126) mimi
 See http://docs.ceph.com/docs/master/cephfs/createfs/ for more informations.
 
 ### Ceph mount
+On Deploy Node (Change the IP address to the public address from node 1):
 ```bash
 apt-get install ceph-common -y
 mkdir /root/mydata
